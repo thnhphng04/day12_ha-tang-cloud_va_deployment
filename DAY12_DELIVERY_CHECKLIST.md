@@ -38,9 +38,9 @@ Create a file `MISSION_ANSWERS.md` with your answers to all exercises:
 ...
 
 ### Exercise 2.3: Image size comparison
-- Develop: [X] MB
-- Production: [Y] MB
-- Difference: [Z]%
+- Develop: [1.66] GB
+- Production: [236] MB
+- Difference: [85.8]%
 
 ## Part 3: Cloud Deployment
 
@@ -144,7 +144,7 @@ curl -X POST https://your-agent.railway.app/ask \
 ##  Pre-Submission Checklist
 
 - [ ] Repository is public (or instructor has access)
-- [ ] `MISSION_ANSWERS.md` completed with all exercises
+- [x] `MISSION_ANSWERS.md` completed with all exercises
 - [ ] `DEPLOYMENT.md` has working public URL
 - [ ] All source code in `app/` directory
 - [ ] `README.md` has clear setup instructions
