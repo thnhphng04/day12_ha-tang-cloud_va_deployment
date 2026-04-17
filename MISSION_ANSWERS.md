@@ -35,16 +35,49 @@
 ## Part 3: Cloud Deployment
 
 ### Exercise 3.1: Railway deployment
-- URL: [Đang chờ triển khai] (Vui lòng chạy `railway login` và `railway up` để lấy URL)
-- Screenshot: [Link to screenshot in repo]
+- URL: https://day12ha-tang-cloudvadeployment-production-da89.up.railway.app/
+- Screenshot: ./Screenshot.png
 
-### Exercise 3.2: Render vs Railway Comparison
-| Feature | Railway (`railway.toml`) | Render (`render.yaml`) |
-| :--- | :--- | :--- |
-| **Approach** | Platform-as-a-Service (PaaS) | Infrastructure as Code (IaC) |
-| **Config Format** | TOML | YAML (Blueprint) |
-| **Simplicity** | Rất cao, tự động detect tốt | Cao, nhưng cần khai báo Blueprint |
-| **Infrastructure**| Tập trung vào 1 service | Có thể khai báo cả stack (Web, Redis, DB) |
-| **Auto-scaling** | Support tốt qua dashboard | Support qua Blueprint spec |
+## Part 4: API Security
 
-**Khác biệt chính**: Railway tập trung vào sự đơn giản ("it just works"), trong khi Render Blueprint (`render.yaml`) cho phép định nghĩa toàn bộ hạ tầng (như Redis, Database) trong một file duy nhất, giúp quản lý hạ tầng như code (IaC) tốt hơn.
+### Exercise 4.1-4.3: Test results
+- **Auth (JWT)**: Successfully obtained token for user `student`.
+- **Rate Limiting**: Verified 429 error after 10 requests/min.
+- **Output**:
+```json
+{"detail":{"error":"Rate limit exceeded","limit":10,"window_seconds":60,"retry_after_seconds":12}}
+```
+
+### Exercise 4.4: Cost guard implementation
+**Approach**:
+1. **Usage Tracking**: Track `input_tokens` and `output_tokens` per user and globally in-memory (Production would use Redis).
+2. **Pricing**: Applied mock pricing ($0.15/1M input, $0.60/1M output).
+3. **Thresholds**: 
+   - User budget: $1.0/day.
+   - Global budget: $10.0/day (Emergency kill-switch).
+4. **Validation**: Check budget before LLM call (return 402 if exceeded) and update usage after completion.
+
+## Part 5: Scaling & Reliability
+
+### Exercise 5.1-5.5: Implementation notes
+- **Health Checks**: Đã triển khai `/health` (Liveness) và `/ready` (Readiness). Giúp platform tự động hồi phục khi app treo và điều phối traffic chính xác.
+- **Graceful Shutdown**: Sử dụng `lifespan` và bắt tín hiệu SIGTERM để đảm bảo hoàn thành các request đang xử lý (in-flight requests) trước khi tắt (timeout 30s).
+- **Stateless Design**: Chuyển session storage từ memory sang Redis. Điều này cho phép scale lên nhiều instance mà không mất lịch sử trò chuyện (session continuity).
+- **Load Balancing**: Sử dụng Nginx làm Load Balancer để phân tán traffic đều cho các instance Agent, đảm bảo tính sẵn sàng cao.
+
+## Part 6: Final Project
+
+### Production Readiness Check
+- **Kết quả script `check_production_ready.py`**: Passed 20/20 checks (100%).
+- Hệ thống đã tích hợp đầy đủ:
+  - Multi-stage Dockerfile tối ưu.
+  - API Key Authentication & Rate Limiting.
+  - Daily Cost Guard.
+  - Health & Readiness Checks.
+  - JSON Structured Logging.
+  - Graceful Shutdown.
+- **Sẵn sàng triển khai**: Code trong thư mục `06-lab-complete` đã hoàn toàn sẵn sàng để push lên và deploy trên môi trường Cloud (Railway/Render).
+
+
+
+
